@@ -1,15 +1,14 @@
 import os
 import torch
-import pandas as pd # type: ignore
+import pandas as pd 
 
 from tqdm import tqdm
 
-from rdkit import Chem # type: ignore
-from dgl.data import DGLDataset # type: ignore
-from dgl.dataloading import GraphDataLoader # type: ignore
+from rdkit import Chem
+from dgl.data import DGLDataset
+from dgl.dataloading import GraphDataLoader
 
-#from utils.utils import *
-from model.model import PredictionPKD
+from model.model import PredictionRMSD
 
 from data.ligand_atom_feature import mol_to_graph
 from data.protein_atom_feature import get_all_graph, prot_to_graph, pl_to_c_graph
