@@ -7,7 +7,7 @@ from dgl.nn.pytorch.glob import SumPooling
 
 from .GatedGCNLSPE import GatedGCNLSPELayer
 
-class PredictionPKD(nn.Module):
+class PredictionRMSD(nn.Module):
     def __init__(self, in_size, emb_size, intra_edge_size, inter_edge_size, pose_size, num_layers, dropout_ratio=0.15):
         super(PredictionPKD, self).__init__()
         self.res_token_encoder  = nn.Embedding( 22, int(emb_size / 2) )
