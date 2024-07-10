@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import dgl.function as fn
 
-from dgl.nn.pytorch.glob import AvgPooling, SumPooling, MaxPooling
+from dgl.nn.pytorch.glob import SumPooling
 
 from .GatedGCNLSPE import GatedGCNLSPELayer
 
