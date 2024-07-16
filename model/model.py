@@ -9,7 +9,7 @@ from .GatedGCNLSPE import GatedGCNLSPELayer
 
 class PredictionRMSD(nn.Module):
     def __init__(self, in_size, emb_size, intra_edge_size, inter_edge_size, pose_size, num_layers, dropout_ratio=0.15):
-        super(PredictionPKD, self).__init__()
+        super(PredictionRMSD, self).__init__()
         self.res_token_encoder  = nn.Embedding( 22, int(emb_size / 2) )
         self.atom_token_encoder = nn.Embedding( 175, int(emb_size / 2) )
         self.protein_edge_encoder  = nn.Linear( 15, emb_size )
