@@ -119,9 +119,9 @@ def rmsd_prediction( protein_pdb, ligand_sdf, output, batch_size, model_path, de
 if __name__ == "__main__" :
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('-r','--protein_pdb', default='./1KLT_rec.pdb', help='receptor .pdb')
-    parser.add_argument('-l','--ligand_sdf', default='./chk.sdf', help='ligand .sdf')
-    parser.add_argument('-o','--output', default='./result.csv', help='result output file')
+    parser.add_argument('-r','--protein_pdb', default='./example/1KLT_rec.pdb', help='receptor .pdb')
+    parser.add_argument('-l','--ligand_sdf', default='./example/chk.sdf', help='ligand .sdf')
+    parser.add_argument('-o','--output', default='./example/result.csv', help='result output file')
 
     parser.add_argument('--batch_size', default=128, type=int, help='batch size')
     parser.add_argument('--ncpu', default=4, type=int, help="cpu worker number")
