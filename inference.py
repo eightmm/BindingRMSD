@@ -105,8 +105,8 @@ def rmsd_prediction( protein_pdb, ligand_sdf, output, batch_size, model_path, de
 
     loader = GraphDataLoader( dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
 
-    rmsd_model = PredictionPKD(57, 256, 13, 25, 20, 4, 0.2).to(device)
-    prob_model = PredictionPKD(57, 256, 13, 25, 20, 4, 0.2).to(device)
+    rmsd_model = PredictionRMSD(57, 256, 13, 25, 20, 4, 0.2).to(device)
+    prob_model = PredictionRMSD(57, 256, 13, 25, 20, 4, 0.2).to(device)
 
     reg_save_path = f'{model_path}/reg.pth'
     bce_save_path = f'{model_path}/bce.pth'
