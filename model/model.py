@@ -53,8 +53,7 @@ class PredictionRMSD(nn.Module):
         )
 
         self.sum_pooling = SumPooling()
-        self.max_pooling = MaxPooling()
-
+        
     def forward(self, gp, gl, gc):
         hpr = self.res_token_encoder( gp.ndata['token_res'] )
         hpa = self.atom_token_encoder( gp.ndata['token_atom'])
@@ -86,7 +85,7 @@ class PredictionRMSD(nn.Module):
         gl_start_indices = [0] + torch.cumsum(gl_batch_sizes[:-1], dim=0).tolist()
 
         for (protein_layer, ligand_layer, complex_layer) in zip(self.protein_block, self.ligand_block, self.complex_block):
-            hp, pp, ep = protein_layer( gp, hp, pp, ep ) #  g, h, p, e,
+            hp, pp, ep = protein_layer( gp, hp, pp, ep ) 
             hl, pl, el = ligand_layer( gl, hl, pl, el )
 
             hc = []
