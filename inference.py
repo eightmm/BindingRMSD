@@ -1,24 +1,15 @@
 import torch
-<<<<<<< HEAD
 import pandas as pd 
 
 from tqdm import tqdm
 
-from rdkit import Chem
-from dgl.data import DGLDataset
 from dgl.dataloading import GraphDataLoader
 
-from model.model import PredictionRMSD
-=======
-import pandas as pd # type: ignore
-from tqdm import tqdm
-from rdkit import Chem # type: ignore
-from dgl.dataloading import GraphDataLoader # type: ignore
-from model.model import PredictionPKD
 from data.data import PoseSelectionDataset
->>>>>>> change
+from model.model import PredictionRMSD
 
-def rmsd_inference_combined(protein_pdb, ligand_sdf, output, batch_size, model_path, device='cpu'):
+
+def inference(protein_pdb, ligand_sdf, output, batch_size, model_path, device='cpu'):
     dataset = PoseSelectionDataset(
         protein_pdb=protein_pdb,
         ligand_sdf=ligand_sdf
@@ -26,8 +17,8 @@ def rmsd_inference_combined(protein_pdb, ligand_sdf, output, batch_size, model_p
 
     loader = GraphDataLoader(dataset, batch_size=batch_size, shuffle=False, pin_memory=True)
 
-    rmsd_model = PredictionPKD(57, 256, 13, 25, 20, 4, 0).to(device)
-    prob_model = PredictionPKD(57, 256, 13, 25, 20, 4, 0).to(device)
+    rmsd_model = PredictionRMSD(57, 256, 13, 25, 20, 4, 0).to(device)
+    prob_model = PredictionRMSD(57, 256, 13, 25, 20, 4, 0).to(device)
 
     reg_save_path = f'{model_path}/reg.pth'
     bce_save_path = f'{model_path}/bce.pth'
@@ -64,16 +55,11 @@ def rmsd_inference_combined(protein_pdb, ligand_sdf, output, batch_size, model_p
             rmsd[error == 1] = torch.tensor(float('nan'))
             prob[error == 1] = torch.tensor(float('nan'))
 
-<<<<<<< HEAD
-    rmsd_model = PredictionRMSD(57, 256, 13, 25, 20, 4, 0.2).to(device)
-    prob_model = PredictionRMSD(57, 256, 13, 25, 20, 4, 0.2).to(device)
-=======
             results["Name"].extend(names)
             results["RMSD"].extend(rmsd.tolist())
             results["Prob"].extend(prob.tolist())
             results["RMSD*Prob"].extend((rmsd * prob).tolist())
             results["RMSD+Prob"].extend((rmsd + prob).tolist())
->>>>>>> change
 
             progress_bar.update(len(names))
 
@@ -88,16 +74,9 @@ if __name__ == "__main__":
     import os
 
     parser = argparse.ArgumentParser()
-<<<<<<< HEAD
-    parser.add_argument('-r','--protein_pdb', default='./example/1KLT_rec.pdb', help='receptor .pdb')
-    parser.add_argument('-l','--ligand_sdf', default='./example/chk.sdf', help='ligand .sdf')
-    parser.add_argument('-o','--output', default='./example/result.csv', help='result output file')
-=======
     parser.add_argument('-r', '--protein_pdb', default='./1KLT_rec.pdb', help='receptor .pdb')
     parser.add_argument('-l', '--ligand_sdf', default='./chk.sdf', help='ligand .sdf')
     parser.add_argument('-o', '--output', default='./result.csv', help='result output file')
->>>>>>> change
-
     parser.add_argument('--batch_size', default=128, type=int, help='batch size')
     parser.add_argument('--ncpu', default=4, type=int, help="cpu worker number")
     parser.add_argument('--device', type=str, default='cuda', help='choose device: cpu or cuda')
@@ -118,7 +97,7 @@ if __name__ == "__main__":
             print("gpu is not available, run on cpu")
             device = torch.device("cpu")
 
-    rmsd_inference_combined(
+    inference(
         protein_pdb=args.protein_pdb,
         ligand_sdf=args.ligand_sdf,
         output=args.output,
