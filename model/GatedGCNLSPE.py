@@ -5,14 +5,7 @@ import dgl.function as fn
 
 import dgl
 
-"""
-    GatedGCNLSPE: GatedGCN with LSPE
-"""
-
 class GatedGCNLSPELayer(nn.Module):
-    """
-        Param: []
-    """
     def __init__(self, input_dim, output_dim, dropout, batch_norm, use_lapeig_loss=False, residual=True):
         super().__init__()
         self.in_channels = input_dim
@@ -35,7 +28,6 @@ class GatedGCNLSPELayer(nn.Module):
         
         self.bn_node_h = nn.BatchNorm1d(output_dim)
         self.bn_node_e = nn.BatchNorm1d(output_dim)
-        # self.bn_node_p = nn.BatchNorm1d(output_dim)
 
     def message_func_for_vij(self, edges):
         hj = edges.src['h'] # h_j
@@ -52,30 +44,21 @@ class GatedGCNLSPELayer(nn.Module):
       
     def forward(self, g, h, p, e):   
         with g.local_scope():
-        
-            # for residual connection
             h_in = h 
             p_in = p 
             e_in = e 
 
-            # For the h's
             g.ndata['h']  = h 
             g.ndata['A1_h'] = self.A1(torch.cat((h, p), -1)) 
-            # self.A2 being used in message_func_for_vij() function
             g.ndata['B1_h'] = self.B1(h)
             g.ndata['B2_h'] = self.B2(h) 
 
-            # For the p's
             g.ndata['p'] = p
             g.ndata['C1_p'] = self.C1(p)
-            # self.C2 being used in message_func_for_pj() function
 
-            # For the e's
             g.edata['e']  = e 
             g.edata['B3_e'] = self.B3(e) 
 
-            #--------------------------------------------------------------------------------------#
-            # Calculation of h
             g.apply_edges(fn.u_add_v('B1_h', 'B2_h', 'B1_B2_h'))
             g.edata['hat_eta'] = g.edata['B1_B2_h'] + g.edata['B3_e']
             g.edata['sigma_hat_eta'] = torch.sigmoid(g.edata['hat_eta'])
@@ -86,40 +69,28 @@ class GatedGCNLSPELayer(nn.Module):
             g.update_all(fn.copy_e('eta_mul_v', 'm'), fn.sum('m', 'sum_eta_v')) # sum_j eta_ij * v_ij
             g.ndata['h'] = g.ndata['A1_h'] + g.ndata['sum_eta_v']
 
-            # Calculation of p
             g.apply_edges(self.message_func_for_pj) # p_j
             g.edata['eta_mul_p'] = g.edata['eta_ij'] * g.edata['C2_pj'] # eta_ij * C2_pj
             g.update_all(fn.copy_e('eta_mul_p', 'm'), fn.sum('m', 'sum_eta_p')) # sum_j eta_ij * C2_pj
             g.ndata['p'] = g.ndata['C1_p'] + g.ndata['sum_eta_p']
 
-            #--------------------------------------------------------------------------------------#
-
-            # passing towards output
             h = g.ndata['h'] 
             p = g.ndata['p']
             e = g.edata['hat_eta'] 
 
-            # GN from benchmarking-gnns-v1
-            # h = h * snorm_n
-
-            # batch normalization  
             if self.batch_norm:
                 h = self.bn_node_h(h)
                 e = self.bn_node_e(e)
-                # No BN for p
 
-            # non-linear activation
             h = F.relu(h) 
             e = F.relu(e) 
             p = torch.tanh(p)
 
-            # residual connection
             if self.residual:
                 h = h_in + h 
                 p = p_in + p
                 e = e_in + e 
 
-            # dropout
             h = F.dropout(h, self.dropout, training=self.training)
             p = F.dropout(p, self.dropout, training=self.training)
             e = F.dropout(e, self.dropout, training=self.training)
