@@ -56,10 +56,8 @@ def inference(protein_pdb, ligand_file, output, batch_size, model_path, device='
             prob[error == 1] = torch.tensor(float('nan'))
 
             results["Name"].extend(names)
-            results["RMSD"].extend(rmsd.tolist())
-            results["Prob"].extend(prob.tolist())
-            results["RMSD*Prob"].extend((rmsd * prob).tolist())
-            results["RMSD+Prob"].extend((rmsd + prob).tolist())
+            results["Predicted_RMSD"].extend(rmsd.tolist())
+            results["Is_Above_2A"].extend(prob.tolist())
 
             progress_bar.update(len(names))
 

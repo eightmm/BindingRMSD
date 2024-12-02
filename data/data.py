@@ -1,5 +1,5 @@
 import os
-import torch
+import torch, dgl
 
 from rdkit import Chem # type: ignore
 from dgl.data import DGLDataset # type: ignore
@@ -34,6 +34,7 @@ def process_ligand_file(file_path):
                 ligand_name = f"{base_name}_{idx}"
             ligand_names.append(ligand_name)
         else:
+            ligands.append(None)
             err_tag.append(1)
             ligand_names.append(f"{base_name}_{idx}")
 
@@ -82,13 +83,13 @@ class PoseSelectionDataset(DGLDataset):
             mol = self.lig_mols[idx]
             gl = mol_to_graph(mol)
             gp, gl, gc = get_all_graph(self.gp, gl)
-            error = 0
+            error = self.err_tags[idx]
             name = self.lig_names[idx]
 
         except:
             gl = self.lig_dummy_graph(num_nodes=3)
             gp, gl, gc = get_all_graph(self.gp, gl)
-            error = 1
+            error = self.err_tags[idx]
             name = self.lig_names[idx]
 
         return gp, gl, gc, error, name
