@@ -31,10 +31,8 @@ def inference(protein_pdb, ligand_file, output, batch_size, model_path, device='
 
     results = {
         "Name": [],
-        "RMSD": [],
-        "Prob": [],
-        "RMSD*Prob": [],
-        "RMSD+Prob": [],
+        "Predicted_RMSD": [],
+        "Is_Above_2A": [],
     }
 
     with torch.no_grad():
