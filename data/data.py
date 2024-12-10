@@ -7,16 +7,20 @@ from dgl.data import DGLDataset # type: ignore
 from .ligand_atom_feature import mol_to_graph
 from .protein_atom_feature import get_all_graph, prot_to_graph, pl_to_c_graph
 
+
 def process_ligand_file(file_path):
     extension = os.path.splitext(file_path)[-1].lower()
 
     if extension == '.sdf':
-        supplier = enumerate(Chem.SDMolSupplier(file_path))
+        supplier = enumerate(Chem.SDMolSupplier(file_path, sanitize=False))
     elif extension == '.mol2':
         with open(file_path, 'r') as f:
             mol2_data = f.read()
         mol2_blocks = mol2_data.split('@<TRIPOS>MOLECULE')
-        supplier = enumerate(Chem.MolFromMol2Block('@<TRIPOS>MOLECULE' + block) for block in mol2_blocks[1:])
+        supplier = enumerate(
+            Chem.MolFromMol2Block('@<TRIPOS>MOLECULE' + block, sanitize=False) 
+            for block in mol2_blocks[1:]
+        )
     else:
         raise ValueError(f"Unsupported file type: {extension}")
 
@@ -29,7 +33,7 @@ def process_ligand_file(file_path):
         if mol is not None:
             ligands.append(mol)
             err_tag.append(0)
-            ligand_name = mol.GetProp('_Name')
+            ligand_name = mol.GetProp('_Name') if mol.HasProp('_Name') else ''
             if ligand_name == '':
                 ligand_name = f"{base_name}_{idx}"
             ligand_names.append(ligand_name)
@@ -39,6 +43,7 @@ def process_ligand_file(file_path):
             ligand_names.append(f"{base_name}_{idx}")
 
     return ligands, err_tag, ligand_names
+
 
 def load_ligands(file_path):
     lig_mols = []
