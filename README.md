@@ -16,7 +16,7 @@ conda create -n BindingRMSD python=3.11
 conda activate BindingRMSD
 pip install dgl -f https://data.dgl.ai/wheels/torch-2.4/cu121/repo.html
 pip install rdkit
-pip install meeko (if using (DLG or PDBQT) from AutoDock)
+pip install meeko  # Required if using DLG or PDBQT files from AutoDock
 ```
 
 ## Usage
@@ -30,20 +30,28 @@ To run the inference and predict RMSD, use the following command:
 python inference.py -r ./example/1KLT.pdb -l ./example/ligands.sdf -o ./result.csv --model_path ./save --device cuda
 ```
 Where:
-- `-r` specifies the receptor protein PDB file.
-- `-l` specifies the ligand SDF file.
-- `-o` specifies the output CSV file for results.
-- `--model_path` specifies the directory containing the model weights (`reg.pth` and `bce.pth`).
-- `--device` specifies whether to use `cuda` or `cpu`.
+- `-r`: Receptor protein PDB file
+- `-l`: Ligand file (supported formats: .sdf, .mol2, .dlg, .pdbqt)
+- `-o`: Output CSV file for results
+- `--model_path`: Directory containing model weights (`reg.pth` and `bce.pth`)
+- `--device`: Specify `cuda` or `cpu`
 
 ### Output
 
-The output will be saved in the specified CSV file and will contain the following columns:
-- **Name**: Name or index of the ligand.
-- **RMSD**: Predicted RMSD of the ligand pose.
-- **Prob**: Predicted probability of the ligand pose being correct.
-- **RMSD\*Prob**: Product of RMSD and probability.
-- **RMSD+Prob**: Sum of RMSD and probability.
+The output will be saved in the specified CSV file with the following columns:
+- **Name**: Name or identifier of the ligand pose
+- **pRMSD**: Predicted RMSD value for the ligand pose
+- **Is_Above_2A**: Predicted probability of the pose being correct (between 0 and 1)
+- **ADG_Score**: AutoDock Score (available for .dlg and .pdbqt files, NaN for other formats)
+
+### Input File Formats
+
+The ligand input file supports the following formats:
+- `.sdf`: Standard Structure Data File
+- `.mol2`: MOL2 file format
+- `.dlg`: AutoDock-GPU docking result DLG file
+- `.pdbqt`: AutoDock Vina result PDBQT file
+- `.txt`: Text file containing a list of paths to any of the above formats
 
 ## File Structure
 
