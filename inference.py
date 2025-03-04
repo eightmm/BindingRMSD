@@ -31,15 +31,16 @@ def inference(protein_pdb, ligand_file, output, batch_size, model_path, device='
 
     results = {
         "Name": [],
-        "Predicted_RMSD": [],
+        "pRMSD": [],
         "Is_Above_2A": [],
+        "ADG_Score": [],
     }
 
     with torch.no_grad():
         progress_bar = tqdm(total=len(loader.dataset), unit='ligand')
 
         for data in loader:
-            bgp, bgl, bgc, error, names = data
+            bgp, bgl, bgc, error, names, adg_score = data
             bgp, bgl, bgc = bgp.to(device), bgl.to(device), bgc.to(device)
 
             rmsd = rmsd_model(bgp, bgl, bgc)
@@ -54,9 +55,9 @@ def inference(protein_pdb, ligand_file, output, batch_size, model_path, device='
             prob[error == 1] = torch.tensor(float('nan'))
 
             results["Name"].extend(names)
-            results["Predicted_RMSD"].extend(rmsd.tolist())
+            results["pRMSD"].extend(rmsd.tolist())
             results["Is_Above_2A"].extend(prob.tolist())
-
+            results["ADG_Score"].extend(adg_score.tolist())
             progress_bar.update(len(names))
 
         progress_bar.close()
@@ -71,7 +72,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-r', '--protein_pdb', default='./1KLT_rec.pdb', help='receptor .pdb')
-    parser.add_argument('-l', '--ligand_file', default='./chk.sdf', help='ligand .sdf')
+    parser.add_argument('-l', '--ligand_file', default='./chk.sdf', help='ligand .sdf .txt .mol2 .dlg .pdbqt')
     parser.add_argument('-o', '--output', default='./result.csv', help='result output file')
     parser.add_argument('--batch_size', default=128, type=int, help='batch size')
     parser.add_argument('--ncpu', default=4, type=int, help="cpu worker number")

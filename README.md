@@ -10,9 +10,12 @@ git clone https://github.com/eightmm/BindingRMSD.git
 cd BindingRMSD
 ```
 
-2. Set up a Python environment and install dependencies: You can use the provided `env.yaml` to create a conda environment:
+2. Set up a Python environment and install dependencies:
 ```bash
-conda env create -f env.yaml
+conda create -n BindingRMSD python=3.11
+pip install dgl -f https://data.dgl.ai/wheels/torch-2.4/cu121/repo.html
+pip install rdkit
+pip install meeko (if using (DLG or PDBQT) from AutoDock)
 conda activate BindingRMSD
 ```
 
