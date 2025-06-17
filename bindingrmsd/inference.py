@@ -5,8 +5,8 @@ from tqdm import tqdm
 
 from dgl.dataloading import GraphDataLoader
 
-from data.data import PoseSelectionDataset
-from model.model import PredictionRMSD
+from bindingrmsd.data.data import PoseSelectionDataset
+from bindingrmsd.model.model import PredictionRMSD
 
 
 def inference(protein_pdb, ligand_file, output, batch_size, model_path, device='cpu'):
