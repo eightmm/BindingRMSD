@@ -72,7 +72,8 @@ def _process_supplier(supplier, file_path):
             mol = Chem.RemoveHs(mol)
             ligands.append(mol)
             err_tag.append(0)
-            ligand_name = mol.GetProp('_Name') if mol.HasProp('_Name') and mol.GetProp('_Name').strip() else f"{base_name}_{idx}"
+            mol_name = mol.GetProp('_Name') if mol.HasProp('_Name') and mol.GetProp('_Name').strip() else base_name
+            ligand_name = f"{mol_name}_{idx}"
             ligand_names.append(ligand_name)
         else:
             ligands.append(None)
